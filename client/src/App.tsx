@@ -4,70 +4,105 @@ import type { Task, CreateTaskRequest } from './types';
 import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 
+/**
+ * The main App component manages the task list, including loading, creating, updating, and deleting tasks.
+ * It handles state for tasks, loading state, and errors, and renders the UI accordingly.
+ *
+ * @returns {JSX.Element} The rendered App component with task form and list.
+ */
 function App() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [tasks, setTasks] = useState([]);  // State to hold the array of tasks
+  const [loading, setLoading] = useState(true);  // State to indicate if data is being loaded
+  const [error, setError] = useState(null);  // State to hold any error messages
 
+  /**
+   * useEffect hook to load tasks when the component mounts.
+   * The empty dependency array ensures this runs only once on initial render.
+   */
   useEffect(() => {
     loadTasks();
   }, []);
 
+  /**
+   * Asynchronously loads tasks from the API.
+   * Sets loading state, fetches tasks, updates state on success, or sets an error on failure.
+   */
   const loadTasks = async () => {
     try {
-      setLoading(true);
-      const fetchedTasks = await tasksApi.getAllTasks();
-      setTasks(fetchedTasks);
-      setError(null);
+      setLoading(true);  // Set loading to true before fetching
+      const fetchedTasks = await tasksApi.getAllTasks();  // Fetch tasks from API
+      setTasks(fetchedTasks);  // Update tasks state with fetched data
+      setError(null);  // Clear any previous error
     } catch (err) {
-      setError('Failed to load tasks');
-      console.error('Error loading tasks:', err);
+      setError('Failed to load tasks');  // Set error message on failure
+      console.error('Error loading tasks:', err);  // Log error for debugging
     } finally {
-      setLoading(false);
+      setLoading(false);  // Always set loading to false after attempt
     }
   };
 
-  const handleCreateTask = async (taskData: CreateTaskRequest) => {
+  /**
+   * Asynchronously handles creating a new task.
+   * 
+   * @param {CreateTaskRequest} taskData - The data for the new task to create.
+   */
+  const handleCreateTask = async (taskData) => {
     try {
-      const newTask = await tasksApi.createTask(taskData);
-      setTasks(prev => [newTask, ...prev]);
-      setError(null);
+      const newTask = await tasksApi.createTask(taskData);  // Create task via API
+      setTasks(prev => [newTask, ...prev]);  // Add new task to the beginning of the tasks array
+      setError(null);  // Clear any previous error
     } catch (err) {
-      setError('Failed to create task');
-      console.error('Error creating task:', err);
+      setError('Failed to create task');  // Set error message on failure
+      console.error('Error creating task:', err);  // Log error for debugging
     }
   };
 
-  const handleUpdateTask = async (id: string, updates: Partial<Task>) => {
+  /**
+   * Asynchronously handles updating an existing task.
+   * 
+   * @param {string} id - The ID of the task to update.
+   * @param {Partial<Task>} updates - The partial updates to apply to the task.
+   */
+  const handleUpdateTask = async (id, updates) => {
     try {
-      const updatedTask = await tasksApi.updateTask(id, updates);
-      setTasks(prev => prev.map(task => task.id === id ? updatedTask : task));
-      setError(null);
+      const updatedTask = await tasksApi.updateTask(id, updates);  // Update task via API
+      setTasks(prev => prev.map(task => task.id === id ? updatedTask : task));  // Update the specific task in state
+      setError(null);  // Clear any previous error
     } catch (err) {
-      setError('Failed to update task');
-      console.error('Error updating task:', err);
+      setError('Failed to update task');  // Set error message on failure
+      console.error('Error updating task:', err);  // Log error for debugging
     }
   };
 
-  const handleDeleteTask = async (id: string) => {
+  /**
+   * Asynchronously handles deleting a task.
+   * 
+   * @param {string} id - The ID of the task to delete.
+   */
+  const handleDeleteTask = async (id) => {
     try {
-      await tasksApi.deleteTask(id);
-      setTasks(prev => prev.filter(task => task.id !== id));
-      setError(null);
+      await tasksApi.deleteTask(id);  // Delete task via API
+      setTasks(prev => prev.filter(task => task.id !== id));  // Remove the task from state
+      setError(null);  // Clear any previous error
     } catch (err) {
-      setError('Failed to delete task');
-      console.error('Error deleting task:', err);
+      setError('Failed to delete task');  // Set error message on failure
+      console.error('Error deleting task:', err);  // Log error for debugging
     }
   };
 
-  const handleToggleComplete = async (task: Task) => {
-    await handleUpdateTask(task.id, { completed: !task.completed });
+  /**
+   * Handles toggling the completion status of a task by calling the update function.
+   * 
+   * @param {Task} task - The task object to toggle.
+   */
+  const handleToggleComplete = async (task) => {
+    await handleUpdateTask(task.id, { completed: !task.completed });  // Toggle the completed status
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>  // Loading spinner element
       </div>
     );
   }
