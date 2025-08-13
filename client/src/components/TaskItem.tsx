@@ -8,10 +8,19 @@ interface TaskItemProps {
   onDeleteTask: (id: string) => void;
 }
 
+/**
+ * TaskItem component displays a task item and handles interactions like toggling completion, updating, and deleting.
+ * 
+ * @param {TaskItemProps} props - The properties for the TaskItem component.
+ *   @param {Task} props.task - The task object to display and manage.
+ *   @param {function(Task): void} props.onToggleComplete - Callback to toggle the completion status of the task.
+ *   @param {function(string, Partial<Task>): void} props.onUpdateTask - Callback to update the task with the given ID and partial updates.
+ *   @param {function(string): void} props.onDeleteTask - Callback to delete the task with the given ID.
+ */
 export default function TaskItem({ task, onToggleComplete, onUpdateTask, onDeleteTask }: TaskItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(task.title);
-  const [editDescription, setEditDescription] = useState(task.description || '');
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editTitle, setEditTitle] = useState<string>(task.title);
+  const [editDescription, setEditDescription] = useState<string>(task.description || '');
 
   const handleSave = () => {
     if (editTitle.trim()) {
@@ -42,6 +51,7 @@ export default function TaskItem({ task, onToggleComplete, onUpdateTask, onDelet
     return new Date(dateString).toLocaleDateString();
   };
 
+  // Conditional rendering: Render the editing form if isEditing is true
   if (isEditing) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
