@@ -1,4 +1,4 @@
-import type { Task } from '../types';
+import { Task } from '../types';
 import TaskItem from './TaskItem';
 
 interface TaskListProps {
@@ -8,6 +8,12 @@ interface TaskListProps {
   onDeleteTask: (id: string) => void;
 }
 
+/**
+ * Renders a list of tasks, separated into To Do and Completed sections.
+ *
+ * @param {TaskListProps} props - The properties for the TaskList component.
+ * @returns {JSX.Element} The JSX element representing the task list.
+ */
 export default function TaskList({ tasks, onToggleComplete, onUpdateTask, onDeleteTask }: TaskListProps) {
   if (tasks.length === 0) {
     return (
@@ -22,45 +28,27 @@ export default function TaskList({ tasks, onToggleComplete, onUpdateTask, onDele
   const completedTasks = tasks.filter(task => task.completed);
   const incompleteTasks = tasks.filter(task => !task.completed);
 
+  const renderTaskSection = (title: string, tasksToRender: Task[]) => (
+    <div>
+      <h3 className="text-lg font-medium text-gray-900 mb-3">{title}</h3>
+      <div className="space-y-2">
+        {tasksToRender.map(task => (
+          <TaskItem
+            key={task.id}
+            task={task}
+            onToggleComplete={onToggleComplete}
+            onUpdateTask={onUpdateTask}
+            onDeleteTask={onDeleteTask}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
-      {incompleteTasks.length > 0 && (
-        <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-3">
-            To Do ({incompleteTasks.length})
-          </h3>
-          <div className="space-y-2">
-            {incompleteTasks.map(task => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                onToggleComplete={onToggleComplete}
-                onUpdateTask={onUpdateTask}
-                onDeleteTask={onDeleteTask}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {completedTasks.length > 0 && (
-        <div>
-          <h3 className="text-lg font-medium text-gray-900 mb-3">
-            Completed ({completedTasks.length})
-          </h3>
-          <div className="space-y-2">
-            {completedTasks.map(task => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                onToggleComplete={onToggleComplete}
-                onUpdateTask={onUpdateTask}
-                onDeleteTask={onDeleteTask}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {incompleteTasks.length > 0 && renderTaskSection(`To Do (${incompleteTasks.length})`, incompleteTasks)}
+      {completedTasks.length > 0 && renderTaskSection(`Completed (${completedTasks.length})`, completedTasks)}
     </div>
   );
 }

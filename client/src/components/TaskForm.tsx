@@ -5,29 +5,75 @@ interface TaskFormProps {
   onSubmit: (task: CreateTaskRequest) => void;
 }
 
+/**
+ * A React component for rendering a task creation form.
+ * Handles user input for task details and submits the data via the onSubmit prop.
+ *
+ * @param {TaskFormProps} props - The properties for the component.
+ */
 export default function TaskForm({ onSubmit }: TaskFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
   const [category, setCategory] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!title.trim()) return;
+  /**
+   * Validates the title to ensure it's not empty after trimming.
+   * This check prevents submission of incomplete forms.
+   *
+   * @returns {boolean} True if the title is valid, false otherwise.
+   */
+  const validateTitle = () => {
+    return title.trim() !== '';
+  };
 
-    onSubmit({
+  /**
+   * Prepares the task data object based on current state values.
+   * Ensures data is trimmed and provides defaults where appropriate.
+   *
+   * @returns {CreateTaskRequest} The formatted task data ready for submission.
+   */
+  const prepareTaskData = (): CreateTaskRequest => {
+    return {
       title: title.trim(),
       description: description.trim() || undefined,
       priority,
       category: category.trim() || 'general',
-    });
+    };
+  };
 
-    // Reset form
+  /**
+   * Resets the form state to initial values after successful submission.
+   * This clears the form for the next use.
+   */
+  const resetForm = () => {
     setTitle('');
     setDescription('');
     setPriority('medium');
     setCategory('');
+  };
+
+  /**
+   * Handles the form submission event.
+   * Prevents default form behavior, validates input, submits data if valid, and resets the form.
+   * This function orchestrates the submission process while delegating specific tasks to other functions.
+   *
+   * @param {React.FormEvent} e - The form submission event.
+   */
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();  // Prevent the default page reload on form submit
+    
+    // Check if the title is valid before proceeding
+    if (!validateTitle()) {
+      // Early return to handle invalid input without further processing
+      return;
+    }
+    
+    // Prepare and submit the task data
+    onSubmit(prepareTaskData());
+    
+    // Reset the form after successful submission
+    resetForm();
   };
 
   return (
