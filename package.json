@@ -1,0 +1,20 @@
+{
+  "name": "full-stack-task-manager",
+  "version": "1.0.0",
+  "description": "A full stack task management application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "server:build": "cd server && npm run build",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "keywords": ["full-stack", "react", "express", "typescript"],
+  "author": "Shane",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
